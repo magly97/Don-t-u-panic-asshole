@@ -87,3 +87,20 @@ class WorldObject:
                                                  + self._move_left_corner_y,self._width_collision,
                                                  self._height_collision], 1)
         pygame.draw.rect(screen, (255, 0, 0), [hero_x, hero_y, hero_width, hero_height], 1)
+
+    def check_collision_bullet(self, bullet_x, bullet_y, bullet_width, bullet_height):
+        width, height = pygame.display.Info().current_w, pygame.display.Info().current_h
+        x_object, y_object = self._x_coordinate+width/2, self._y_coordinate+height/2
+
+        if x_object + self._move_left_corner_x < bullet_x < (x_object + self._move_left_corner_x + self._width_collision)\
+                or x_object + self._move_left_corner_x < (bullet_x + bullet_width) < (x_object + self._width_collision +
+                                                                                      self._move_left_corner_x):
+            if y_object + self._move_left_corner_y < bullet_y < y_object + self._move_left_corner_y + self._height_collision:
+                return True
+            elif y_object + self._move_left_corner_y < (bullet_y + bullet_height) < (y_object + self._move_left_corner_y
+                                                                                     + self._height_collision):
+                return True
+            else:
+                return False
+        else:
+            return False
