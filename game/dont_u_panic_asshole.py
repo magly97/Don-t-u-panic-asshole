@@ -16,6 +16,7 @@ from lib import server_list
 from lib import creators_menu
 from lib import controls
 from lib.connections import connector
+from lib.connections import udp_connector
 
 QUEUE_SIZE = 20
 RECONNECT_TRY_DELAY = 10
@@ -47,6 +48,25 @@ class TcpConnectionThread(threading.Thread):
             return True
 
 
+class UdpConnectionThread(threading.Thread):
+
+    def __init__(self, game):
+        threading.Thread.__init__(self)
+        self.__game = game
+
+    def run(self):
+        last_response_time = time.time()
+        conn = self.__game.get_udp_connector()
+        while True:
+            response = conn.get_response(timeout=GET_RESPONSE_TIMEOUT)
+            if response is not False:
+                last_response_time = time.time()
+                self.__game.queue_put(response)
+            if time.time()-last_response_time > 10:
+                self.__game.set_state(gamestates.MAIN_MENU)
+                break
+
+
 class Game:
     def __init__(self):
         self.__game_title = 'Dont\'t u panic asshole'
@@ -57,6 +77,7 @@ class Game:
         self.__screen = None
         self.__events = None
         self.__conn = connector.Connector()
+        self.__udp_conn = None
         self.__queue = queue.Queue(QUEUE_SIZE)
         self.__server_responses = []
         self.__thread = TcpConnectionThread(self)
@@ -148,6 +169,10 @@ class Game:
         self.__thread_stop = True
         pygame.quit()
         exit(-1)
+
+    def create_udp_connection_thread(self):
+        if self.__udp_conn is None:
+            self.__udp_conn = udp_connector.UdpConnector()
 
 
 if __name__ == "__main__":

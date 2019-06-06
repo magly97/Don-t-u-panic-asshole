@@ -4,8 +4,8 @@ class Packet:
 
     data = []
 
-    def __init__(self, type, data, key):
-        self.type = type
+    def __init__(self, request_type, data, key):
+        self.type = request_type
         self.data = data
         self.authKey = key
 

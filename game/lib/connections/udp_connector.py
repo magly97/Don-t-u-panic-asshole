@@ -3,7 +3,7 @@ import pickle
 import json
 from lib import errors_provider
 from lib.connections.request.udp_login import UdpLogin
-from lib.connections.request.udp_packet import Packet
+from lib.connections.request.packet import Packet
 
 
 class UdpConnector:

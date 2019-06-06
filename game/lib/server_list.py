@@ -34,6 +34,7 @@ class ServerList:
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                 if self.__server_list is not None:
                     self.__active_server = self.__interactive_menu.get_marked_line_index
+                    #self.__game.create_udp_connection_thread()
                     self.__game.set_state(gamestates.GAME)
                     print(self.__active_server)
 
