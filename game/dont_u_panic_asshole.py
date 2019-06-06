@@ -77,10 +77,11 @@ class Game:
         self.__screen = None
         self.__events = None
         self.__conn = connector.Connector()
-        self.__udp_conn = None
+        self.__udp_conn = udp_connector.UdpConnector()
         self.__queue = queue.Queue(QUEUE_SIZE)
         self.__server_responses = []
         self.__thread = TcpConnectionThread(self)
+        self.__udp_thread = None
         self.__thread_stop = False
         self.__thread.start()
 
@@ -172,7 +173,7 @@ class Game:
 
     def create_udp_connection_thread(self):
         if self.__udp_conn is None:
-            self.__udp_conn = udp_connector.UdpConnector()
+            self.__udp_conn = UdpConnectionThread(self)
 
 
 if __name__ == "__main__":

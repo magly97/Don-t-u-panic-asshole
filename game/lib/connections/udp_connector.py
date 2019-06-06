@@ -21,7 +21,7 @@ class UdpConnector:
             with open(self.__server_config_file_dir) as json_file:
                 config_file = json.load(json_file)
                 self.__SERVER_IP_ADDRESS = config_file['ipAddress']
-                self.__SERVER_PORT = config_file['portNumber']
+                self.__SERVER_PORT = config_file['udpPortNumber']
                 self.__MAX_PACKAGE = config_file['maxPackage']
         except Exception as e:
             print(f'Error reading config file {e}')
