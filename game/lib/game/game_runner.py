@@ -60,14 +60,17 @@ class GameRunner:
 
     def __handle_keydown_events(self, event):
 
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
-            self.selected_weapon(-1, 0)
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
-            self.selected_weapon(1, 0)
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
-            self.selected_weapon(0, -1)
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
-            self.selected_weapon(0, 1)
+        if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                self.selected_weapon(mouse_x, mouse_y)
+        # if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
+        #     self.selected_weapon(-1, 0)
+        # elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
+        #     self.selected_weapon(1, 0)
+        # elif event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
+        #     self.selected_weapon(0, -1)
+        # elif event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
+        #     self.selected_weapon(0, 1)
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_w:
             self.__main_hero_vertical_speed = -self.__hero_move_converter(self.__main_hero)
@@ -150,9 +153,11 @@ class GameRunner:
             self.__weapons.append(
                 Sword(self.__main_hero.get_x() + self.__screen_size[0] / 2 + self.__main_hero.get_center_x(),
                       self.__main_hero.get_y() + self.__screen_size[1] / 2 + self.__main_hero.get_center_x(),
-                      horizontal, vertical))
+                      horizontal, vertical, self.__main_hero.get_center_x(), self.__main_hero.get_center_y(),
+                      self.__screen_size))
         elif marked_index == 1:
             self.__weapons.append(
                 Bullet(self.__main_hero.get_x() + self.__screen_size[0] / 2 + self.__main_hero.get_center_x(),
                        self.__main_hero.get_y() + self.__screen_size[1] / 2 + self.__main_hero.get_center_x(),
-                       horizontal, vertical))
+                       horizontal, vertical, self.__main_hero.get_center_x(), self.__main_hero.get_center_y(),
+                       self.__screen_size))
