@@ -191,6 +191,7 @@ class Game:
     def crash(self, msg):
         print(msg)
         self.__thread_stop = True
+        self.__udp_thread_stop = True
         pygame.quit()
         exit(-1)
 
