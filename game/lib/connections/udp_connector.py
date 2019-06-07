@@ -28,43 +28,25 @@ class UdpConnector:
             exit(errors_provider.CONFIG_ERROR)
 
     def __bind_socket(self):
-        try:
-            self.__socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            self.__socket.connect((self.__SERVER_IP_ADDRESS, self.__SERVER_PORT))
-        except socket.error as exc:
-            print(f'Exception while connecting to server {exc}')
+        self.__socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    def get_response(self, timeout=None):
+    def get_response(self):
         try:
-            if timeout is not None:
-                self.__socket.settimeout(timeout)
-            server_response = self.__socket.recv(self.__MAX_PACKAGE)
-            self.__socket.settimeout(None)
+            server_response, _ = self.__socket.recvfrom(self.__MAX_PACKAGE)
             if server_response == '':
                 return False
             else:
                 server_response = self.__deserialize_object(server_response)
             print(f'Server responded with {server_response}')
             return server_response
-        except socket.timeout:
-            self.__socket.settimeout(None)
         except Exception as e:
             print(f'Error receiving data from server {e}')
         return False
 
-    def udp_login(self):
-        udp_login = UdpLogin()
-        try:
-            self.__socket.send(self.__serialize_object(udp_login))
-        except Exception as e:
-            print(f'Error sending data to server (Udp_Login) {e}')
-            return False
-        return True
-
-    def send_packet_with_objects_id(self, request_type, data: [], auth_key):
+    def send_packet(self, request_type, data: [], auth_key):
         packet = Packet(request_type, data, auth_key)
         try:
-            self.__socket.send(self.__serialize_object(packet))
+            self.__socket.sendto(self.__serialize_object(packet), (self.__SERVER_IP_ADDRESS, self.__SERVER_PORT))
         except Exception as e:
             print(f'Error sending data to server (Packet with objects id) {e}')
             return False

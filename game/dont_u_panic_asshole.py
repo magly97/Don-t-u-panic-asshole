@@ -17,6 +17,8 @@ from lib import creators_menu
 from lib import controls
 from lib.connections import connector
 from lib.connections import udp_connector
+from lib.connections.request import request_types
+
 
 QUEUE_SIZE = 20
 RECONNECT_TRY_DELAY = 10
@@ -53,18 +55,21 @@ class UdpConnectionThread(threading.Thread):
     def __init__(self, game):
         threading.Thread.__init__(self)
         self.__game = game
+        self.__stop_thread = False
 
     def run(self):
         last_response_time = time.time()
         conn = self.__game.get_udp_connector()
-        while True:
-            response = conn.get_response(timeout=GET_RESPONSE_TIMEOUT)
+        conn.send_packet(request_types.UDP_LOGIN, [self.__game.get_logged_user()], 8)
+        while self.__stop_thread is False:
+            #conn.send_packet(request_types.UDP_GET_OBJECT, [''], 8) 
+            response = conn.get_response()
             if response is not False:
                 last_response_time = time.time()
                 self.__game.queue_put(response)
             if time.time()-last_response_time > 10:
                 self.__game.set_state(gamestates.MAIN_MENU)
-                break
+                self.__game.stop_udp()
 
 
 class Game:
@@ -83,13 +88,30 @@ class Game:
         self.__thread = TcpConnectionThread(self)
         self.__udp_thread = None
         self.__thread_stop = False
+        self.__udp_thread_stop = False
+        self.__logged_user = None
         self.__thread.start()
 
     def thread_status(self):
         return self.__thread_stop
 
+    def udp_thread_status(self):
+        return self.__udp_thread_stop
+
+    def stop_udp(self):
+        self.__udp_thread_stop = True
+
     def get_connector(self):
         return self.__conn
+
+    def set_logged_user(self, user):
+        self.__logged_user = user
+
+    def get_logged_user(self):
+        return self.__logged_user
+
+    def get_udp_connector(self):
+        return self.__udp_conn
 
     def queue_put(self, data):
         self.__queue.put(data)
@@ -172,8 +194,9 @@ class Game:
         exit(-1)
 
     def create_udp_connection_thread(self):
-        if self.__udp_conn is None:
-            self.__udp_conn = UdpConnectionThread(self)
+        if self.__udp_thread is None:
+            self.__udp_thread = UdpConnectionThread(self)
+            self.__udp_thread.start()
 
 
 if __name__ == "__main__":

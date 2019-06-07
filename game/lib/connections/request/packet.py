@@ -7,5 +7,5 @@ class Packet:
     def __init__(self, request_type, data, key):
         self.type = request_type
         self.data = data
-        self.authKey = key
+        self.auth_key = key
 

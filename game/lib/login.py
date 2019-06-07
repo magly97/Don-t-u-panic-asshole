@@ -75,6 +75,8 @@ class Login(object):
                 continue
             if response['response'] == 'True':
                 print("Login success")
+                login = self.__input_login.get_value()
+                self.__game.set_logged_user(login)
                 self.__game.set_state(gamestates.MAIN_MENU)
                 self.__waiting_for_server_response = False
             else:
