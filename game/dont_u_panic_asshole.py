@@ -55,22 +55,20 @@ class UdpConnectionThread(threading.Thread):
     def __init__(self, game):
         threading.Thread.__init__(self)
         self.__game = game
-        self.__stop_thread = False
 
     def run(self):
         last_response_time = time.time()
         conn = self.__game.get_udp_connector()
         conn.send_packet(request_types.UDP_LOGIN, [self.__game.get_logged_user()], 8)
-        while self.__stop_thread is False:
+        while not self.__game.udp_thread_status():
             #conn.send_packet(request_types.UDP_GET_OBJECT, [''], 8)
             response = conn.get_response()
             if response is not False:
                 last_response_time = time.time()
-                self.__game.queue_put(response)
+                self.__game.udp_queue_put(response)
             if time.time()-last_response_time > 10:
                 self.__game.set_state(gamestates.MAIN_MENU)
                 self.__game.stop_udp()
-
 
 class Game:
     def __init__(self):
@@ -84,6 +82,7 @@ class Game:
         self.__conn = connector.Connector()
         self.__udp_conn = udp_connector.UdpConnector()
         self.__queue = queue.Queue(QUEUE_SIZE)
+        self.__udp_queue = queue.Queue(QUEUE_SIZE)
         self.__server_responses = []
         self.__thread = TcpConnectionThread(self)
         self.__udp_thread = None
@@ -115,6 +114,9 @@ class Game:
 
     def queue_put(self, data):
         self.__queue.put(data)
+
+    def udp_queue_put(self, data):
+        self.__udp_queue.put(data)
 
     def get_server_responses(self):
         return self.__server_responses
