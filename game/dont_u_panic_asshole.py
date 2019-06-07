@@ -62,7 +62,7 @@ class UdpConnectionThread(threading.Thread):
         conn = self.__game.get_udp_connector()
         conn.send_packet(request_types.UDP_LOGIN, [self.__game.get_logged_user()], 8)
         while self.__stop_thread is False:
-            #conn.send_packet(request_types.UDP_GET_OBJECT, [''], 8) 
+            #conn.send_packet(request_types.UDP_GET_OBJECT, [''], 8)
             response = conn.get_response()
             if response is not False:
                 last_response_time = time.time()
@@ -184,6 +184,7 @@ class Game:
     def quit(self):
         print("Bye bye :(")
         self.__thread_stop = True
+        self.__udp_thread_stop = True
         pygame.quit()
         exit(0)
 
