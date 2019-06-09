@@ -1,5 +1,13 @@
 from lib.game.items.item import Item
 import pygame
+import os
+import json
+
+item_config = None
+file_exists = os.path.isfile("lib/config/items/item_config.json")
+if file_exists:
+    with open("lib/config/items/item_config.json") as json_file:
+        item_config = json.load(json_file)
 
 
 class Stick(Item):
@@ -8,5 +16,6 @@ class Stick(Item):
         self._id = 1
         self._name = 'Stick'
         self._sprite = pygame.transform.scale(pygame.image.load('config/assets/items/stick.png'), (64, 64))
+        self._action = item_config['melee']
 
 

@@ -149,13 +149,20 @@ class GameRunner:
 
     def selected_weapon(self, horizontal, vertical):
         marked_index = self.__main_hero.get_equipment().get_marked_index()
-        if marked_index == 0:
+        marked_item = self.__main_hero.get_equipment().get_item_by_index(marked_index)
+        distance = 1
+        melee = 0
+        if marked_item is not None:
+            action = self.__main_hero.get_equipment().get_item_by_index(marked_index).get_action()
+        else:
+            action = None
+        if action == melee:
             self.__weapons.append(
                 Sword(self.__main_hero.get_x() + self.__screen_size[0] / 2 + self.__main_hero.get_center_x(),
                       self.__main_hero.get_y() + self.__screen_size[1] / 2 + self.__main_hero.get_center_x(),
                       horizontal, vertical, self.__main_hero.get_center_x(), self.__main_hero.get_center_y(),
                       self.__screen_size))
-        elif marked_index == 1:
+        elif action == distance:
             self.__weapons.append(
                 Bullet(self.__main_hero.get_x() + self.__screen_size[0] / 2 + self.__main_hero.get_center_x(),
                        self.__main_hero.get_y() + self.__screen_size[1] / 2 + self.__main_hero.get_center_x(),
